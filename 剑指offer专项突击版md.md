@@ -108,3 +108,48 @@ public:
 };
 ```
 
+# [剑指 Offer II 007. 数组中和为 0 的三个数](https://leetcode-cn.com/problems/1fGaJU/)
+
+**medium**
+
+三维如果能固定一维即可转换成二维，而找二维指定和就可以转换成双指针。一开始固定的一维可以通过遍历的方式固定。
+上面的思路不难想，被卡的原因是我没有找到正确的使用双指针的范围。
+正确的范围是固定的第一维后面的数。
+证明粗略的想就是
+1、双指针一定能找到该范围内sum为-target的所有组合。
+2、如果这种策略不能找到所有的解那么一定是在某个固定位置pos下漏掉的
+3、那么漏掉的情况分为四种。pos把区间一分为二成area1和area2，l和r指针 2*2的情况。
+4、那么想要漏掉一定会反驳第一点，所以一定不会漏掉（至于第一点为什么正确想必不用解释了）
+
+```c++
+class Solution {
+public:
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        vector<vector<int>> ans ;
+        int n = nums.size() ;
+        if(n < 3) return ans ;
+        sort(nums.begin(), nums.end()) ;
+        for(int pos = 0 ; pos < n ; ++ pos)
+        {
+            if(pos && nums[pos] == nums[pos-1]) continue ;
+            int l = pos+1, r = n-1 ;
+            while(l < r)
+            {
+                int sum = nums[l] + nums[r] + nums[pos] ; 
+                if(sum == 0)
+                {
+                    ans.emplace_back(vector<int>{nums[l], nums[r], nums[pos]}) ;
+                    l ++ ; r -- ;
+                    while(l < r && nums[l] == nums[l-1]) l ++ ;
+                    while(l < r && nums[r] == nums[r+1]) r -- ;
+                }
+                else if(sum > 0) r -- ;
+                else l ++ ;
+            }
+        }
+
+        return ans ;
+    }
+};
+```
+
